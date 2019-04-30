@@ -1,0 +1,25 @@
+Jobscope
+
+Maps
++ geopy
++ gmplot
+- Figure out algorithm to find shortest distance between two airports(must have 1 transition airport in between) - use any shortest path algorithm
+- User input: Initial_country, Destination_country
+- Function output: Best airport transition
+
+Newspaper
+(up to you to use whatever python library you want)
+- List out newspaper of chosen airports' country (must be english)
+- Extract political part of the newspaper
+- Figure out algorithm to find which of the two countries has a more positive political status
+- User input: Country_1, Country_2
+- Function output: More political country
+
+Report:
+- Introduction
+- Description of assignment
+- Method used (Algorithm)
+- Implementation (How we use the algorithm and the logic of code)
+- Snapshot of source code
+- Complexity
+- Conclusion

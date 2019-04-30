@@ -8,8 +8,8 @@ from geopy.distance import geodesic
 def calCoordinates(place1, place2):
     return geodesic(place1, place2).kilometers
 
-def createList(airports_dict, latitude, longitude):
-    array = {}
+def createList(airports_dict):
+    airport_array = {}
     array2 = {}
 
     for x in range(len(airports_dict)):
@@ -27,18 +27,16 @@ def createList(airports_dict, latitude, longitude):
             # print(place2,"\n")
             
             array2[airports_dict[y]["name"]] = calCoordinates(place1, place2)
-            array[key] = copy.deepcopy(array2)
+            airport_array[key] = copy.deepcopy(array2)
 
-    print(array)
-    with open('data.txt', 'w', encoding='utf-8') as outfile:  
-        json.dump(array, outfile, ensure_ascii=False)
+    with open('airport_distance.txt', 'w', encoding='utf-8') as outfile:  
+        json.dump(airport_array, outfile, ensure_ascii=False)
+    return airport_array
 
 api_key = "AIzaSyD3cSr8TLouz71dNLj-VBMnacep2ChcFLM"
 
 airports = ["Kuala Lumpur International Airport", "Changi Airport Singapore", "Abu Dhabi International Airport", "Chhatrapati Shivaji International Airport", "Sheremetyevo International Airport", "Haneda Airport", "Beijing Capital International Airport", "Shanghai Pudong International Airport", "Incheon International Airport", "Soekarno-Hatta International Airport", "Heathrow Airport", "Paris Charles de Gaulle", "Stockholm-Arlanda", "Victoria Falls Airport", "Sao Paulo International Airport"]
-latitude = []
-longitude = []
-airport_names = []
+
 airport_dict = {}
 airport_dict2 = {}
 x = 0
@@ -47,12 +45,8 @@ for airport in airports:
     try:
         geolocator = Nominatim(user_agent="BestFlight")
         locate_place = geolocator.geocode(airport)
-        print(locate_place.address, ": ")
-        print((locate_place.latitude, locate_place.longitude), "\n")
-        
-        airport_names.append(locate_place.address)
-        latitude.append(locate_place.latitude)
-        longitude.append(locate_place.longitude)
+        # print(locate_place.address, ": ")
+        # print((locate_place.latitude, locate_place.longitude), "\n")
         
         airport_dict2["name"] = airport
         airport_dict2["address"] = locate_place.address
@@ -70,5 +64,5 @@ for airport in airports:
 with open('airport_dict.txt', 'w', encoding='utf-8') as outfile:  
     json.dump(airport_dict, outfile, ensure_ascii=False)
 
-createList(airport_dict, latitude, longitude)
+airport_array = createList(airport_dict)
 
