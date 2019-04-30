@@ -1,17 +1,14 @@
 import gmplot 
 import webbrowser
-from airport_map import latitude, longitude
-  
-latitude_list = [ 30.3358376, 30.307977, 30.3216419 ] 
-longitude_list = [ 77.8701919, 78.048457, 78.0413095 ] 
-  
+from airport_map import latitude, longitude, airport_names
+   
 gmap = gmplot.GoogleMapPlotter(latitude[0], 
-                                longitude[0], 13) 
+                                longitude[0], 5) 
   
 # scatter method of map object  
 # scatter points on the google map 
 gmap.scatter( latitude, longitude, '# FF0000', 
-                              size = 10, marker = False ) 
+                              size = 5, marker = False ) 
 gmap.apikey = "AIzaSyD3cSr8TLouz71dNLj-VBMnacep2ChcFLM"
 # Plot method Draw a line in 
 # between given coordinates 
