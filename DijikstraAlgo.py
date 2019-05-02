@@ -1,5 +1,17 @@
-from airport_map import airport_array
+from airport_map import airport_array, airport_dict
 import copy
+
+def addCoordinates(path, latitude, longitude, count):
+    temp_latitude = []
+    temp_longitude = []
+    for y in range(len(path)):
+        for z in range(len(airport_dict)):
+            if(path[y] == airport_dict[z]["name"]):
+                temp_latitude.append(airport_dict[z]["latitude"])
+                temp_longitude.append(airport_dict[z]["longitude"])
+    latitude[count] = copy.deepcopy(temp_latitude)
+    longitude[count] = copy.deepcopy(temp_longitude)
+    count+=1
 
 def dijkstra(graph, start, goal):
     del graph[start][goal]
@@ -7,11 +19,14 @@ def dijkstra(graph, start, goal):
 
     shortest_paths ={}
     distance = {}
+    latitude = {}
+    longitude = {}
 
     shortest_distance = {}
     predecessor = {}
     unseenNodes = copy.deepcopy(graph)
     infinity = 9999999
+    count = 0
     path = []
 
     for x in range(10):
@@ -53,16 +68,8 @@ def dijkstra(graph, start, goal):
             
             del graph[start][path[1]]
             unseenNodes = copy.deepcopy(graph)
+            addCoordinates(path, latitude, longitude, count)
+            count+=1
             path.clear()
     
-    return shortest_paths, distance
-
-
-
-shortest_paths = {}
-distance = {}
-shortest_paths, distance = dijkstra(airport_array, "Kuala Lumpur International Airport", "Changi Airport Singapore")
-
-for x in range(len(shortest_paths)):
-    print("Route ",x,": ",shortest_paths[x])
-    print("Distance: ", distance[x])
+    return shortest_paths, distance, latitude, longitude

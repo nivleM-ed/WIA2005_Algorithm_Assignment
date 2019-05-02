@@ -29,6 +29,8 @@ def createList(airports_dict):
             array2[airports_dict[y]["name"]] = calCoordinates(place1, place2)
             airport_array[key] = copy.deepcopy(array2)
 
+    
+
     with open('airport_distance.txt', 'w', encoding='utf-8') as outfile:  
         json.dump(airport_array, outfile, ensure_ascii=False)
     return airport_array
@@ -39,15 +41,20 @@ airports = ["Kuala Lumpur International Airport", "Changi Airport Singapore", "A
 
 airport_dict = {}
 airport_dict2 = {}
+latitude_all = []
+longitude_all = []
 x = 0
 
 for airport in airports:
     try:
         geolocator = Nominatim(user_agent="BestFlight")
         locate_place = geolocator.geocode(airport)
-        # print(locate_place.address, ": ")
-        # print((locate_place.latitude, locate_place.longitude), "\n")
+        print(airport, ": ")
+        print((locate_place.latitude, locate_place.longitude), "\n")
         
+        latitude_all.append(locate_place.latitude)
+        longitude_all.append(locate_place.longitude)
+
         airport_dict2["name"] = airport
         airport_dict2["address"] = locate_place.address
         airport_dict2["latitude"]= locate_place.latitude
@@ -59,10 +66,6 @@ for airport in airports:
     except:
         print("Can't find place")
 
-# print(airport_dict2)
-# print(airport_dict)
+airport_array = createList(airport_dict)
 with open('airport_dict.txt', 'w', encoding='utf-8') as outfile:  
     json.dump(airport_dict, outfile, ensure_ascii=False)
-
-airport_array = createList(airport_dict)
-
