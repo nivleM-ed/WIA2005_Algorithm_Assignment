@@ -10,10 +10,17 @@ Maps
 Newspaper
 (up to you to use whatever python library you want)
 - List out newspaper of chosen airports' country (must be english)
-- Extract political part of the newspaper
-- Figure out algorithm to find which of the two countries has a more positive political status
-- User input: Country_1, Country_2
-- Function output: More political country
+- Extract political part of the newspaper(see example for more info)
+- Figure out algorithm to find which of the countries has a more positive political status
+- Save positive/negative words in a json/txt file so it can be read by the function to search for positive/negative words (can find words from website given in the assignment example)
+- User input: array of country airport
+- Function output: ditionary of airports in order of most positive airport
+- E.g output:
+- {"Changi Airport": {"Positive": "70", "Negative": "10"},
+"SomeOtherAirport": {"Positive": "58", "Negative": "32"}}
+- Positive can be calculated where (positive_words/total_words)*100percent
+- Negative does not have to be (100 - positive) since there are neutral words too
+- Plot histogram graph of postive words n negative words
 
 Report:
 - Introduction
