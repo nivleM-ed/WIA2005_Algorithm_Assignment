@@ -1,6 +1,9 @@
+import json, nltk, urllib.request, copy
 from geopy.geocoders import Nominatim
 from geopy.distance import geodesic
-import json
+from nltk.corpus import stopwords
+from bs4 import BeautifulSoup
+from bs4.element import Comment
 
 
 # API Used:
@@ -45,11 +48,43 @@ import json
 # place_1 = (latitude,longitude)
 # place_2 = (latitude,longitude)
 # print(geodesic(place_1, place_2).kilometers)
-
-import urllib.request
-from bs4 import BeautifulSoup
-from bs4.element import Comment
      
+# def tag_visible(element):
+#     if element.parent.name in ['style', 'script', 'head', 'title', 'meta', '[document]']:
+#         return False
+#     if isinstance(element, Comment):
+#         return False
+#     return True
+
+# def text_from_html(body):
+#     soup = BeautifulSoup(body, 'html.parser')
+#     texts = soup.findAll(text=True)
+#     visible_texts = filter(tag_visible, texts)
+#     return u" ".join(t.strip() for t in visible_texts)
+
+# html = urllib.request.urlopen('https://www.straitstimes.com/politics').read()
+# str1 = text_from_html(html)
+# # str_replace = str.replace(" ",",")
+# str_split = str1.split(" ")
+
+# length = len(str_split)
+# print(length,"LENGTH")
+# x = 0
+    
+# while x < length:
+#     if str_split[x] == '':
+#         str_split.remove(str_split[x]);
+#         length = length - 1
+#         continue
+#     x+=1
+
+# print(str_split)
+
+input = "stopword.txt"
+text = open(input,"r")
+text_string = text.read().lower()
+word = text_string.split("\n")
+
 def tag_visible(element):
     if element.parent.name in ['style', 'script', 'head', 'title', 'meta', '[document]']:
         return False
@@ -57,26 +92,29 @@ def tag_visible(element):
         return False
     return True
 
+
 def text_from_html(body):
     soup = BeautifulSoup(body, 'html.parser')
     texts = soup.findAll(text=True)
     visible_texts = filter(tag_visible, texts)
     return u" ".join(t.strip() for t in visible_texts)
 
-html = urllib.request.urlopen('https://www.straitstimes.com/politics').read()
-str1 = text_from_html(html)
-# str_replace = str.replace(" ",",")
-str_split = str1.split(" ")
+d = 256
 
-length = len(str_split)
-print(length,"LENGTH")
-x = 0
-    
-while x < length:
-    if str_split[x] == '':
-        str_split.remove(str_split[x]);
-        length = length - 1
-        continue
-    x+=1
+stop_words = stopwords.words('english') 
+
+html = urllib.request.urlopen('https://www.straitstimes.com/politics').read()
+str = text_from_html(html)
+str_split = str.split(" ")
+
+while("" in str_split):
+    str_split.remove("")
+# print(str_split, "\n")
 
 print(str_split)
+
+tokenized_words = ['i', 'am', 'going', 'to', 'go', 'to', 'the', 'store', 'and', 'park']
+
+test = [word for word in str_split if word not in stop_words]
+print("\n\n",test)
+# print(str_split)

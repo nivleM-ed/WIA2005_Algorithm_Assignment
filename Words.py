@@ -1,6 +1,7 @@
-import urllib.request
+import urllib.request, nltk
 from bs4 import BeautifulSoup
 from bs4.element import Comment
+from nltk.corpus import stopwords
      
 def tag_visible(element):
     if element.parent.name in ['style', 'script', 'head', 'title', 'meta', '[document]']:
@@ -15,20 +16,20 @@ def text_from_html(body):
     visible_texts = filter(tag_visible, texts)
     return u" ".join(t.strip() for t in visible_texts)
 
+def cleanArr(arr):
+    arr = arr.split(" ")
+
+    while("" in arr):
+        arr.remove("")
+    return arr
+
+def removeStopWord(arr):
+    stop_words = stopwords.words('english')
+    arr = [x.lower() for x in arr]
+    return [word for word in arr if word not in stop_words]
+
 html = urllib.request.urlopen('https://www.straitstimes.com/politics').read()
-str1 = text_from_html(html)
-# str_replace = str.replace(" ",",")
-str_split = str1.split(" ")
+str_split = cleanArr(text_from_html(html))
 
-length = len(str_split)
-print(length,"LENGTH")
-x = 0
-
-while x < length:
-    if str_split[x] == '':
-        str_split.remove(str_split[x]);
-        length = length - 1
-        continue
-    x+=1
-
-print(str_split)
+print("[STOP WORDS NOT REMOVED]",str_split,"[STOP WORDS NOT REMOVED]")
+print("[STOP WORDS REMOVED]",removeStopWord(str_split),"[STOP WORDS REMOVED]")
