@@ -39,6 +39,7 @@ def getAirports():
 
     return airport_array
 
+#get difference between two coordinates
 def calCoordinates(place1, place2):
     return geodesic(place1, place2).kilometers
 
@@ -69,7 +70,7 @@ def addCoordinates(path, latitude, longitude, count):
     temp_latitude = []
     temp_longitude = []
     for y in range(len(path)):
-        for z in range(len(airport_dict)):
+        for z in range(len(airport_dict)): #complexity = n^2
             if(path[y] == airport_dict[z]["name"]):
                 temp_latitude.append(airport_dict[z]["latitude"])
                 temp_longitude.append(airport_dict[z]["longitude"])
