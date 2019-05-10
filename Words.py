@@ -16,7 +16,7 @@ def text_from_html(body):
     visible_texts = filter(tag_visible, texts)
     return u" ".join(t.strip() for t in visible_texts)
 
-def cleanArr(arr):
+def removeNone(arr):
     arr = arr.split(" ")
 
     while("" in arr):
@@ -29,7 +29,7 @@ def removeStopWord(arr):
     return [word for word in arr if word not in stop_words]
 
 html = urllib.request.urlopen('https://www.straitstimes.com/politics').read()
-str_split = cleanArr(text_from_html(html))
+str_split = removeNone(text_from_html(html))
 
 print("[STOP WORDS NOT REMOVED]",str_split,"[STOP WORDS NOT REMOVED]")
 print("[STOP WORDS REMOVED]",removeStopWord(str_split),"[STOP WORDS REMOVED]")

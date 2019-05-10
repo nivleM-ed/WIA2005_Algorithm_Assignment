@@ -80,17 +80,17 @@ from bs4.element import Comment
 
 # print(str_split)
 
-input = "stopword.txt"
-text = open(input,"r")
-text_string = text.read().lower()
-word = text_string.split("\n")
+# input = "stopword.txt"
+# text = open(input,"r")
+# text_string = text.read().lower()
+# word = text_string.split("\n")
 
-def tag_visible(element):
-    if element.parent.name in ['style', 'script', 'head', 'title', 'meta', '[document]']:
-        return False
-    if isinstance(element, Comment):
-        return False
-    return True
+# def tag_visible(element):
+#     if element.parent.name in ['style', 'script', 'head', 'title', 'meta', '[document]']:
+#         return False
+#     if isinstance(element, Comment):
+#         return False
+#     return True
 
 
 def text_from_html(body):
@@ -99,22 +99,41 @@ def text_from_html(body):
     visible_texts = filter(tag_visible, texts)
     return u" ".join(t.strip() for t in visible_texts)
 
-d = 256
+# d = 256
 
-stop_words = stopwords.words('english') 
+# stop_words = stopwords.words('english') 
 
-html = urllib.request.urlopen('https://www.straitstimes.com/politics').read()
-str = text_from_html(html)
-str_split = str.split(" ")
+# html = urllib.request.urlopen('https://www.straitstimes.com/politics').read()
+# str = text_from_html(html)
+# str_split = str.split(" ")
 
-while("" in str_split):
-    str_split.remove("")
-# print(str_split, "\n")
+# while("" in str_split):
+#     str_split.remove("")
+# # print(str_split, "\n")
 
-print(str_split)
-
-tokenized_words = ['i', 'am', 'going', 'to', 'go', 'to', 'the', 'store', 'and', 'park']
-
-test = [word for word in str_split if word not in stop_words]
-print("\n\n",test)
 # print(str_split)
+
+# tokenized_words = ['i', 'am', 'going', 'to', 'go', 'to', 'the', 'store', 'and', 'park']
+
+# test = [word for word in str_split if word not in stop_words]
+# print("\n\n",test)
+# print(str_split)
+
+
+#the function
+def cleanStrip(arr):
+    x=0
+    while x<len(arr):
+        arr[x] = arr[x].strip()
+        print(arr[x])
+        x+=1
+    return arr
+
+#opening file
+text_file = open("negative.txt", "r")
+lines = text_file.read().split(',')
+print(lines)
+print(len(lines))
+text_file.close()
+
+print(cleanStrip(lines))

@@ -34,7 +34,7 @@ def getAirports():
             print("Can't find place")
 
     airport_array = createList(airport_dict)
-    with open('airport_dict.txt', 'w', encoding='utf-8') as outfile:  
+    with open('assets/airport_dict.txt', 'w', encoding='utf-8') as outfile:  
         json.dump(airport_dict, outfile, ensure_ascii=False)
 
     return airport_array
@@ -61,7 +61,7 @@ def createList(airports_dict):
             array2[airports_dict[y]["name"]] = calCoordinates(place1, place2)
             airport_array[key] = copy.deepcopy(array2)
 
-    with open('airport_distance.txt', 'w', encoding='utf-8') as outfile:  
+    with open('assets/airport_distance.txt', 'w', encoding='utf-8') as outfile:  
         json.dump(airport_array, outfile, ensure_ascii=False)
     return airport_array
 
@@ -155,7 +155,7 @@ def plotMap(latitude, longitude):
         gmap.plot(latitude[x], longitude[x],  
             color[x], edge_width = 2.5) 
 
-    gmap.draw( "map.html" ) 
+    gmap.draw( "assets/map.html" ) 
 
-    url = 'C:/Users/Melvin/Documents/GithubRepo/WIA2005_Algorithm_Assignment/map.html'
+    url = 'C:/Users/Melvin/Documents/GithubRepo/WIA2005_Algorithm_Assignment/assets/map.html'
     webbrowser.open(url, new=2)
