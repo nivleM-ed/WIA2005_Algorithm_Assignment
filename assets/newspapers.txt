@@ -1,0 +1,17 @@
+Online Englich Newspapers Algo Assignment
+
+Kuala Lumpur: https://www.thestar.com.my/
+Changi: https://www.straitstimes.com/politics
+Abu Dhabi: https://www.khaleejtimes.com/news/government
+Mumbai: https://timesofindia.indiatimes.com/city/mumbai?cfmid=11000000
+Moscow: https://www.themoscowtimes.com/news
+Tokyo: https://www.japantimes.co.jp/news_category/politics-diplomacy/
+BeiJing: http://www.chinadaily.com.cn/china/Beijing-News-Update.htm
+Shanghai: https://www.cnbc.com/shanghai/
+Seoul: http://english.chosun.com/
+Jakarta: https://jakartaglobe.id/
+London: https://www.standard.co.uk/news/politics
+Paris: http://theparisnews.com/
+Sweeden: https://www.thelocal.se/tag/politics
+Zimbabwe: https://www.newsday.co.zw/
+Rio de Janeiro: https://riotimesonline.com/brazil-news/category/rio-politics/local-politics-rio-politics/

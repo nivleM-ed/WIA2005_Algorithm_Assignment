@@ -4,21 +4,60 @@ from geopy.distance import geodesic
 
 airports = ["Kuala Lumpur International Airport", "Changi Airport Singapore", "Abu Dhabi International Airport", "Chhatrapati Shivaji International Airport", "Sheremetyevo International Airport", "Haneda Airport", "Beijing Capital International Airport", "Shanghai Pudong International Airport", "Incheon International Airport", "Soekarno-Hatta International Airport", "Heathrow Airport", "Paris Charles de Gaulle", "Stockholm-Arlanda", "Victoria Falls Airport", "Sao Paulo International Airport"]
 color = ["red", "blue", "yellow", "green", "black", "orange", "purple", "cornflowerblue", "aqua", "white"]
+newspapers = ["https://www.thestar.com.my/",
+"https://www.straitstimes.com/politics",
+"https://www.khaleejtimes.com/news/government",
+"https://timesofindia.indiatimes.com/city/mumbai?cfmid=11000000",
+"https://www.themoscowtimes.com/news",
+"https://www.japantimes.co.jp/news_category/politics-diplomacy/",
+"http://www.chinadaily.com.cn/china/Beijing-News-Update.htm",
+"https://www.cnbc.com/shanghai/",
+"http://english.chosun.com/",
+"https://jakartaglobe.id/",
+"https://www.standard.co.uk/news/politics",
+"http://theparisnews.com/",
+"https://www.thelocal.se/tag/politics",
+"https://www.newsday.co.zw/",
+"https://riotimesonline.com/brazil-news/category/rio-politics/local-politics-rio-politics/"]
+items = list(range(0, 15))
 latitude_all = []
 longitude_all = []
 airport_dict = {}
+
+def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█'):
+    """
+    Call in a loop to create terminal progress bar
+    @params:
+        iteration   - Required  : current iteration (Int)
+        total       - Required  : total iterations (Int)
+        prefix      - Optional  : prefix string (Str)
+        suffix      - Optional  : suffix string (Str)
+        decimals    - Optional  : positive number of decimals in percent complete (Int)
+        length      - Optional  : character length of bar (Int)
+        fill        - Optional  : bar fill character (Str)
+    """
+    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    filledLength = int(length * iteration // total)
+    bar = fill * filledLength + '-' * (length - filledLength)
+    print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end = '\r')
+    # Print New Line on Complete
+    if iteration == total: 
+        print()
 
 #create airport_dict (airport_dict.txt)(Details of airport: Name, Address, Latitude, Longitude)
 #create airport_array (airport_distance.txt)(Details of distance difference between airports)
 def getAirports():
     airport_dict2 = {}
     check = 0
+    printProgressBar(0, len(items), prefix = 'Progress:', suffix = 'Complete', length = 50)
+    
     for airport in airports:
         try:
             geolocator = Nominatim(user_agent="BestFlight")
             locate_place = geolocator.geocode(airport)
-            print(check,". ",airport, ":",(locate_place.latitude, locate_place.longitude))
-            
+            # print(check,". ",airport, ":",(locate_place.latitude, locate_place.longitude))
+            printProgressBar(check + 1, len(items), prefix = 'Progress:', suffix = 'Complete', length = 50)
+
             latitude_all.append(locate_place.latitude)
             longitude_all.append(locate_place.longitude)
 
@@ -26,6 +65,7 @@ def getAirports():
             airport_dict2["address"] = locate_place.address
             airport_dict2["latitude"]= locate_place.latitude
             airport_dict2["longitude"]= locate_place.longitude
+            airport_dict2["link"]= newspapers[check]
 
             airport_dict[check] = copy.deepcopy(airport_dict2)
 
@@ -83,6 +123,7 @@ def dijkstra(graph, start, goal):
     del graph[goal][start]
 
     shortest_paths ={}
+    shortest_paths_str ={}
     distance = {}
     latitude = {}
     longitude = {}
@@ -125,7 +166,8 @@ def dijkstra(graph, start, goal):
         path.insert(0, start)
 
         if shortest_distance[goal] != infinity:
-            shortest_paths[x] = str(path)
+            shortest_paths_str[x] = str(path)
+            shortest_paths[x] = copy.deepcopy(path)
             distance[x] = str(shortest_distance[goal])
             
             # print("Distance is " + str(shortest_distance[goal]))
@@ -137,7 +179,7 @@ def dijkstra(graph, start, goal):
             count+=1
             path.clear()
     
-    return shortest_paths, distance, latitude, longitude
+    return shortest_paths_str, shortest_paths, distance, latitude, longitude
 
 #Plot map
 def plotMap(latitude, longitude):
