@@ -49,7 +49,7 @@ def createList(airports_dict):
 
     for x in range(len(airports_dict)):
         array2.clear()
-        for y in range(len(airports_dict)):
+        for y in range(len(airports_dict)): #complexity = n^2
             if(airports_dict[x]["name"]==airports_dict[y]["name"]):
                 continue
 
