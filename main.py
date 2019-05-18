@@ -2,7 +2,8 @@ import copy
 from time import sleep
 
 from Map import airports, dijkstra, getAirports, plotMap
-from Words import Analysis, plotNegVPos
+from Words import Analysis, plotAllWords, plotNegVPos, plotStopwords
+
 
 def getBestFlight(shortest_path, distance, probability):
     best_flight = {}
@@ -85,8 +86,20 @@ noChoice = ['no', 'n']
 
 user_in = input("\nWould you like to view the map(y/n): ")
 if user_in in yesChoice:
+    print("Plotting graph on plot.ly...")
     plotMap(latitude, longitude)
 
 user_in = input("\nWould you like to view graph of negative and positive words:(y/n) ")
 if user_in in yesChoice:
+    print("Plotting graph on plot.ly...")
     plotNegVPos()
+
+user_in = input("\nWould you like to view graph of all words:(y/n) ")
+if user_in in yesChoice:
+    print("Plotting graph on plot.ly...")
+    plotAllWords()
+
+user_in = input("\nWould you like to view graph of stopwords:(y/n) ")
+if user_in in yesChoice:
+    print("Plotting graph on plot.ly...")
+    plotStopwords()
