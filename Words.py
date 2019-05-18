@@ -157,8 +157,10 @@ def Analysis():
 
 
 def compare(p, n):
-    if p > n or p == n:
+    if p > n:
         print("The country have positive political situation.")
+    elif p == n:
+        print("The country has an average political situation.")
     else:
         print("The country have negative political situation.")
 

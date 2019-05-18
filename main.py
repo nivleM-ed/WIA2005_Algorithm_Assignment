@@ -2,7 +2,7 @@ import copy
 from time import sleep
 
 from Map import airports, dijkstra, getAirports, plotMap
-from Words import Analysis, plotAllWords, plotNegVPos, plotStopwords
+from Words import Analysis, plotAllWords, plotNegVPos, plotStopwords, compare
 
 
 def getBestFlight(shortest_path, distance, probability):
@@ -16,7 +16,11 @@ def getBestFlight(shortest_path, distance, probability):
         while shortest_path[x][1] != probability[y]['name']:
             y+=1
         
-        positive_score = probability[y]['positive'] - probability[y]['negative']
+        if probability[y]['positive'] > probability[y]['negative'] or probability[y]['positive'] == probability[y]['negative']:
+            positive_score = probability[y]['positive'] - probability[y]['negative']
+        else:
+            positive_score = 2*probability[y]['negative']
+        
         total_score = distance_score + positive_score
 
         best_flight2["path"] = shortest_path[x]
@@ -80,6 +84,7 @@ best_flight = getBestFlight(shortest_paths, distance, probability)
 for x in range(len(best_flight)):
     print("Route",x+1,":",best_flight[x]["path"])
     print("Distance:", best_flight[x]["distance"],"\tPositive percentage: ", best_flight[x]["positive"],"\tNegative percentage: ", best_flight[x]["negative"])
+    print(compare(best_flight[x]["positive"],best_flight[x]["negative"]))
 
 yesChoice = ['yes','y']
 noChoice = ['no', 'n']
