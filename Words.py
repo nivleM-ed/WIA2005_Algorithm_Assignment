@@ -127,7 +127,6 @@ def Analysis():
         airport_url = airport_array[i]["link"]
         opener = AppURLopener()
         response = opener.open(airport_url)
-        # html = urllib.request.urlopen(airport_url).read()
         html = response.read()
 
         str = text_from_html(html)
@@ -146,7 +145,6 @@ def Analysis():
         result["positive"] = positive
         result["negative"] = negative
         result["neutral"] = neutral
-        # result["stopWord"] = stopResult
 
         probability[bil] = copy.deepcopy(result)
 
@@ -209,12 +207,6 @@ def plotNegVPos():
 
 
 def plotStopwords():
-    # x, y = zip(*stopResult)
-    # data = [go.Histogram(
-    #     histfunc="sum",
-    #     y=y,
-    #     x=x
-    # ), ]
 
     trace0 = go.Histogram(
         x=stopWordList[0]['wordList'],
@@ -281,16 +273,6 @@ def plotStopwords():
         y=stopWordList[12]['wordFreq'],
         name=airports[12],
     )
-    # trace13 = go.Histogram(
-    #     x=stopWordList[13]['wordList'],
-    #     y=stopWordList[13]['wordFreq'],
-    #     name=airports[13],
-    # )
-    # trace14 = go.Histogram(
-    #     x=stopWordList[14]['wordList'],
-    #     y=stopWordList[14]['wordFreq'],
-    #     name=airports[14],
-    # )
 
     fig = tools.make_subplots(rows=5, cols=3)
     fig.append_trace(trace0, 1, 1)
@@ -306,8 +288,6 @@ def plotStopwords():
     fig.append_trace(trace10, 4, 2)
     fig.append_trace(trace11, 4, 3)
     fig.append_trace(trace12, 5, 1)
-    # fig.append_trace(trace13, 5, 2)
-    # fig.append_trace(trace14, 5, 3)
 
     py.plot(fig, filename='stopwordFrequency')
 
@@ -319,75 +299,65 @@ def plotAllWords():
         name=airports[0],
     )
     trace1 = go.Histogram(
-        x=freqAll[1],
+        x=wordAll[1],
         y=freqAll[1],
         name=airports[1],
     )
     trace2 = go.Histogram(
-        x=freqAll[2],
+        x=wordAll[2],
         y=freqAll[2],
         name=airports[2],
     )
     trace3 = go.Histogram(
-        x=freqAll[3],
+        x=wordAll[3],
         y=freqAll[3],
         name=airports[3],
     )
     trace4 = go.Histogram(
-        x=freqAll[4],
+        x=wordAll[4],
         y=freqAll[4],
         name=airports[4],
     )
     trace5 = go.Histogram(
-        x=freqAll[5],
+        x=wordAll[5],
         y=freqAll[5],
         name=airports[5],
     )
     trace6 = go.Histogram(
-        x=freqAll[6],
+        x=wordAll[6],
         y=freqAll[6],
         name=airports[6],
     )
     trace7 = go.Histogram(
-        x=freqAll[7],
+        x=wordAll[7],
         y=freqAll[7],
         name=airports[7],
     )
     trace8 = go.Histogram(
-        x=freqAll[8],
+        x=wordAll[8],
         y=freqAll[8],
         name=airports[8],
     )
     trace9 = go.Histogram(
-        x=freqAll[9],
+        x=wordAll[9],
         y=freqAll[9],
         name=airports[9],
     )
     trace10 = go.Histogram(
-        x=freqAll[10],
+        x=wordAll[10],
         y=freqAll[10],
         name=airports[10],
     )
     trace11 = go.Histogram(
-        x=freqAll[11],
+        x=wordAll[11],
         y=freqAll[11],
         name=airports[11],
     )
     trace12 = go.Histogram(
-        x=freqAll[12],
+        x=wordAll[12],
         y=freqAll[12],
         name=airports[12],
     )
-    # trace13 = go.Histogram(
-    #     x=freqAll[13],
-    #     y=freqAll[13],
-    #     name=airports[13],
-    # )
-    # trace14 = go.Histogram(
-    #     x=freqAll[14],
-    #     y=freqAll[14],
-    #     name=airports[14],
-    # )
 
     fig = tools.make_subplots(rows=5, cols=3)
     fig.append_trace(trace0, 1, 1)
@@ -403,7 +373,5 @@ def plotAllWords():
     fig.append_trace(trace10, 4, 2)
     fig.append_trace(trace11, 4, 3)
     fig.append_trace(trace12, 5, 1)
-    # fig.append_trace(trace13, 5, 2)
-    # fig.append_trace(trace14, 5, 3)
 
     py.plot(fig, filename='wordFrequency')
