@@ -1,13 +1,12 @@
-import requests, json, io, copy, gmplot, webbrowser
+import requests, json, io, copy, gmplot, webbrowser, math
 from geopy.geocoders import Nominatim
 from geopy.distance import geodesic
 
-airports = ["Kuala Lumpur International Airport", "Changi Airport Singapore", "Abu Dhabi International Airport", "Chhatrapati Shivaji International Airport", "Sheremetyevo International Airport", "Haneda Airport", "Beijing Capital International Airport", "Shanghai Pudong International Airport", "Incheon International Airport", "Soekarno-Hatta International Airport", "Heathrow Airport", "Paris Charles de Gaulle", "Stockholm-Arlanda", "Victoria Falls Airport", "Sao Paulo International Airport"]
+airports = ["Kuala Lumpur International Airport", "Changi Airport Singapore", "Abu Dhabi International Airport",  "Sheremetyevo International Airport", "Haneda Airport", "Beijing Capital International Airport", "Shanghai Pudong International Airport", "Incheon International Airport", "Soekarno-Hatta International Airport", "Heathrow Airport", "Stockholm-Arlanda", "Victoria Falls Airport", "Sao Paulo International Airport"]
 color = ["red", "blue", "yellow", "green", "black", "orange", "purple", "cornflowerblue", "aqua", "white"]
 newspapers = ["https://www.thestar.com.my/",
 "https://www.straitstimes.com/politics",
 "https://www.khaleejtimes.com/news/government",
-"https://timesofindia.indiatimes.com/city/mumbai?cfmid=11000000",
 "https://www.themoscowtimes.com/news",
 "https://www.japantimes.co.jp/news_category/politics-diplomacy/",
 "http://www.chinadaily.com.cn/china/Beijing-News-Update.htm",
@@ -15,11 +14,10 @@ newspapers = ["https://www.thestar.com.my/",
 "http://english.chosun.com/",
 "https://jakartaglobe.id/",
 "https://www.standard.co.uk/news/politics",
-"http://theparisnews.com/",
 "https://www.thelocal.se/tag/politics",
 "https://www.newsday.co.zw/",
 "https://riotimesonline.com/brazil-news/category/rio-politics/local-politics-rio-politics/"]
-items = list(range(0, 15))
+items = list(range(0, 13))
 latitude_all = []
 longitude_all = []
 airport_dict = {}
@@ -72,6 +70,7 @@ def getAirports():
             check+=1
         except:
             print("Can't find place")
+            exit()
 
     airport_array = createList(airport_dict)
     with open('assets/airport_dict.txt', 'w', encoding='utf-8') as outfile:  
@@ -180,6 +179,9 @@ def dijkstra(graph, start, goal):
             path.clear()
     
     return shortest_paths_str, shortest_paths, distance, latitude, longitude
+
+def getPossibleRoutes():
+    return math.factorial(len(airports))
 
 #Plot map
 def plotMap(latitude, longitude):

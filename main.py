@@ -1,9 +1,16 @@
 import copy
 from time import sleep
 
-from Map import airports, dijkstra, getAirports, plotMap
-from Words import Analysis, plotAllWords, plotNegVPos, plotStopwords, compare
+from Map import airports, dijkstra, getAirports, plotMap, getPossibleRoutes
+from Words import Analysis, plotAllWords, plotNegVPos, plotStopwords
 
+def compare(p, n):
+    if p > n:
+        print("The country have positive political situation.")
+    elif p == n:
+        print("The country has an average political situation.")
+    else:
+        print("The country have negative political situation.")
 
 def getBestFlight(shortest_path, distance, probability):
     best_flight = {}
@@ -19,7 +26,7 @@ def getBestFlight(shortest_path, distance, probability):
         if probability[y]['positive'] > probability[y]['negative'] or probability[y]['positive'] == probability[y]['negative']:
             positive_score = probability[y]['positive'] - probability[y]['negative']
         else:
-            positive_score = 2*probability[y]['negative']
+            positive_score = -(2*probability[y]['negative'])
         
         total_score = distance_score + positive_score
 
@@ -72,6 +79,7 @@ print("Origin: ", airports[0])
 goal = input("Goal: ")
 print("You chose", airports[int(goal)-1])
 
+print("Showing the 10 best routes of",getPossibleRoutes(),"possible routes\n")
 shortest_paths_str, shortest_paths, distance, latitude, longitude = dijkstra(airport_array, airports[0], airports[int(goal)-1])
 
 # print(shortest_paths)
@@ -84,14 +92,21 @@ best_flight = getBestFlight(shortest_paths, distance, probability)
 for x in range(len(best_flight)):
     print("Route",x+1,":",best_flight[x]["path"])
     print("Distance:", best_flight[x]["distance"],"\tPositive percentage: ", best_flight[x]["positive"],"\tNegative percentage: ", best_flight[x]["negative"])
-    print(compare(best_flight[x]["positive"],best_flight[x]["negative"]))
+    compare(best_flight[x]["positive"],best_flight[x]["negative"])
+    print("\n")
 
 yesChoice = ['yes','y']
 noChoice = ['no', 'n']
 
+user_in = input("Would you like to view the routes before the best route algorithm:(y/n): ")
+if user_in in yesChoice:
+    print("Getting routes...")
+    for x in range(len(shortest_paths)):
+        print(x,".",shortest_paths[x])
+
 user_in = input("\nWould you like to view the map(y/n): ")
 if user_in in yesChoice:
-    print("Plotting graph on plot.ly...")
+    print("Plotting map with best routes...")
     plotMap(latitude, longitude)
 
 user_in = input("\nWould you like to view graph of negative and positive words:(y/n) ")

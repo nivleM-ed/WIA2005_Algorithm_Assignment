@@ -5,10 +5,11 @@ from plotly import tools
 from bs4 import BeautifulSoup
 from bs4.element import Comment
 from nltk.corpus import stopwords
-from Map import airport_dict
 from threading import Thread
-from Map import printProgressBar, items
+from Map import printProgressBar, items, airports, airport_dict
 
+class AppURLopener(urllib.request.FancyURLopener):
+    version = "Mozilla/5.0"
 
 def readNegPos():
     text_file = open("assets/negative.txt", "r")
@@ -25,7 +26,7 @@ negative_freq = []
 wordAll = []
 freqAll = []
 negative_array, positive_array, stopWord_list = readNegPos()
-
+stopWordList = {}
 
 try:
     _create_unverified_https_context = ssl._create_unverified_context
@@ -95,19 +96,22 @@ def calculatePercentage(str_split):
 
     return positive, negative, neutral
 
+
 #calculate the frequency of stopwords in array
-def stopWord_freq(str_split): 
-    wordFreq2 = []
+def stopWord_freq(str_split, freq): 
+    wordFreq = []
     wordList = []
+    temp = {}
     for w in str_split:
         if w in stopWord_list:
             wordList.append(w)
-            wordFreq2.append(str_split.count(w))
-    result = zip(wordList, wordFreq2)
-    resultSet = set(result)
-    return resultSet
+            wordFreq.append(str_split.count(w))
+    stopWordList[freq] = copy.deepcopy(wordFreq)
+    temp['wordFreq'] = wordFreq
+    temp['wordList'] = wordList
+    stopWordList[freq] = copy.deepcopy(temp)
 
-# 
+
 def Analysis():
     airport_array = airport_dict
     result = {}
@@ -121,14 +125,15 @@ def Analysis():
         printProgressBar(bil + 1, len(items), prefix='Progress:',
                          suffix='Complete', length=50)
         airport_url = airport_array[i]["link"]
-        html = urllib.request.urlopen(airport_url).read()
+        opener = AppURLopener()
+        response = opener.open(airport_url)
+        # html = urllib.request.urlopen(airport_url).read()
+        html = response.read()
 
         str = text_from_html(html)
         str_split = str.split(" ")
         str_split = removeNone(str_split)
-
-        stopResult = stopWord_freq(str_split)
-        # plotStopwords(stopResult)
+        stopWord_freq(str_split,bil)
 
         str_split = removeStopWord(str_split)
         wordAll.append(str_split)
@@ -141,7 +146,7 @@ def Analysis():
         result["positive"] = positive
         result["negative"] = negative
         result["neutral"] = neutral
-        result["stopWord"] = stopResult
+        # result["stopWord"] = stopResult
 
         probability[bil] = copy.deepcopy(result)
 
@@ -154,15 +159,6 @@ def Analysis():
         print(e)
 
     return probability
-
-
-def compare(p, n):
-    if p > n:
-        print("The country have positive political situation.")
-    elif p == n:
-        print("The country has an average political situation.")
-    else:
-        print("The country have negative political situation.")
 
 
 def wordFreq(str_split):
@@ -212,126 +208,89 @@ def plotNegVPos():
     py.plot(data, filename='Positive vs Negative words')
 
 
-def plotStopwords(stopResult):
-    #print("Error here")
-    x, y = zip(*stopResult)
-    data = [go.Histogram(
-        histfunc="sum",
-        y=y,
-        x=x
-    ), ]
-    py.plot(data, filename='stopwordFrequency')
-
-
-def plotAllWords():
-
-    x0 = wordAll[0]
-    x1 = wordAll[1]
-    x2 = wordAll[2]
-    x3 = wordAll[3]
-    x4 = wordAll[4]
-    x5 = wordAll[5]
-    x6 = wordAll[6]
-    x7 = wordAll[7]
-    x8 = wordAll[8]
-    x9 = wordAll[9]
-    x10 = wordAll[10]
-    x11 = wordAll[11]
-    x12 = wordAll[12]
-    x13 = wordAll[13]
-    x14 = wordAll[14]
-
-    y0 = freqAll[0]
-    y1 = freqAll[1]
-    y2 = freqAll[2]
-    y3 = freqAll[3]
-    y4 = freqAll[4]
-    y5 = freqAll[5]
-    y6 = freqAll[6]
-    y7 = freqAll[7]
-    y8 = freqAll[8]
-    y9 = freqAll[9]
-    y10 = freqAll[10]
-    y11 = freqAll[11]
-    y12 = freqAll[12]
-    y13 = freqAll[13]
-    y14 = freqAll[14]
+def plotStopwords():
+    # x, y = zip(*stopResult)
+    # data = [go.Histogram(
+    #     histfunc="sum",
+    #     y=y,
+    #     x=x
+    # ), ]
 
     trace0 = go.Histogram(
-        x=x0,
-        y=y0,
-        name="Kuala Lumpur",
+        x=stopWordList[0]['wordList'],
+        y=stopWordList[0]['wordFreq'],
+        name=airports[0],
     )
     trace1 = go.Histogram(
-        x=x1,
-        y=y1,
-        name="Singapore",
+        x=stopWordList[1]['wordList'],
+        y=stopWordList[1]['wordFreq'],
+        name=airports[1],
     )
     trace2 = go.Histogram(
-        x=x2,
-        y=y2,
-        name="Abu Dhabi",
+        x=stopWordList[2]['wordList'],
+        y=stopWordList[2]['wordFreq'],
+        name=airports[2],
     )
     trace3 = go.Histogram(
-        x=x3,
-        y=y3,
-        name="Mumbai",
+        x=stopWordList[3]['wordList'],
+        y=stopWordList[3]['wordFreq'],
+        name=airports[3],
     )
     trace4 = go.Histogram(
-        x=x4,
-        y=y4,
-        name="Moscow",
+        x=stopWordList[4]['wordList'],
+        y=stopWordList[4]['wordFreq'],
+        name=airports[4],
     )
     trace5 = go.Histogram(
-        x=x5,
-        y=y5,
-        name="Tokyo",
+        x=stopWordList[5]['wordList'],
+        y=stopWordList[5]['wordFreq'],
+        name=airports[5],
     )
     trace6 = go.Histogram(
-        x=x6,
-        y=y6,
-        name="Beijing",
+        x=stopWordList[6]['wordList'],
+        y=stopWordList[6]['wordFreq'],
+        name=airports[6],
     )
     trace7 = go.Histogram(
-        x=x7,
-        y=y7,
-        name="Shanghai",
+        x=stopWordList[7]['wordList'],
+        y=stopWordList[7]['wordFreq'],
+        name=airports[7],
     )
     trace8 = go.Histogram(
-        x=x8,
-        y=y8,
-        name="Seoul",
+        x=stopWordList[8]['wordList'],
+        y=stopWordList[8]['wordFreq'],
+        name=airports[8],
     )
     trace9 = go.Histogram(
-        x=x9,
-        y=y9,
-        name="Jakarta",
+        x=stopWordList[9]['wordList'],
+        y=stopWordList[9]['wordFreq'],
+        name=airports[9],
     )
     trace10 = go.Histogram(
-        x=x10,
-        y=y10,
-        name="London",
+        x=stopWordList[10]['wordList'],
+        y=stopWordList[10]['wordFreq'],
+        name=airports[10],
     )
     trace11 = go.Histogram(
-        x=x11,
-        y=y11,
-        name="Paris",
+        x=stopWordList[11]['wordList'],
+        y=stopWordList[11]['wordFreq'],
+        name=airports[11],
     )
     trace12 = go.Histogram(
-        x=x12,
-        y=y12,
-        name="Sweeden",
+        x=stopWordList[12]['wordList'],
+        y=stopWordList[12]['wordFreq'],
+        name=airports[12],
     )
-    trace13 = go.Histogram(
-        x=x13,
-        y=y13,
-        name="Zimbabwe",
-    )
-    trace14 = go.Histogram(
-        x=x14,
-        y=y14,
-        name="Brazil",
-    )
+    # trace13 = go.Histogram(
+    #     x=stopWordList[13]['wordList'],
+    #     y=stopWordList[13]['wordFreq'],
+    #     name=airports[13],
+    # )
+    # trace14 = go.Histogram(
+    #     x=stopWordList[14]['wordList'],
+    #     y=stopWordList[14]['wordFreq'],
+    #     name=airports[14],
+    # )
 
     fig = tools.make_subplots(rows=5, cols=3)
     fig.append_trace(trace0, 1, 1)
@@ -347,7 +306,104 @@ def plotAllWords():
     fig.append_trace(trace10, 4, 2)
     fig.append_trace(trace11, 4, 3)
     fig.append_trace(trace12, 5, 1)
-    fig.append_trace(trace13, 5, 2)
-    fig.append_trace(trace14, 5, 3)
+    # fig.append_trace(trace13, 5, 2)
+    # fig.append_trace(trace14, 5, 3)
+
+    py.plot(fig, filename='stopwordFrequency')
+
+
+def plotAllWords():
+    trace0 = go.Histogram(
+        x=wordAll[0],
+        y=freqAll[0],
+        name=airports[0],
+    )
+    trace1 = go.Histogram(
+        x=freqAll[1],
+        y=freqAll[1],
+        name=airports[1],
+    )
+    trace2 = go.Histogram(
+        x=freqAll[2],
+        y=freqAll[2],
+        name=airports[2],
+    )
+    trace3 = go.Histogram(
+        x=freqAll[3],
+        y=freqAll[3],
+        name=airports[3],
+    )
+    trace4 = go.Histogram(
+        x=freqAll[4],
+        y=freqAll[4],
+        name=airports[4],
+    )
+    trace5 = go.Histogram(
+        x=freqAll[5],
+        y=freqAll[5],
+        name=airports[5],
+    )
+    trace6 = go.Histogram(
+        x=freqAll[6],
+        y=freqAll[6],
+        name=airports[6],
+    )
+    trace7 = go.Histogram(
+        x=freqAll[7],
+        y=freqAll[7],
+        name=airports[7],
+    )
+    trace8 = go.Histogram(
+        x=freqAll[8],
+        y=freqAll[8],
+        name=airports[8],
+    )
+    trace9 = go.Histogram(
+        x=freqAll[9],
+        y=freqAll[9],
+        name=airports[9],
+    )
+    trace10 = go.Histogram(
+        x=freqAll[10],
+        y=freqAll[10],
+        name=airports[10],
+    )
+    trace11 = go.Histogram(
+        x=freqAll[11],
+        y=freqAll[11],
+        name=airports[11],
+    )
+    trace12 = go.Histogram(
+        x=freqAll[12],
+        y=freqAll[12],
+        name=airports[12],
+    )
+    # trace13 = go.Histogram(
+    #     x=freqAll[13],
+    #     y=freqAll[13],
+    #     name=airports[13],
+    # )
+    # trace14 = go.Histogram(
+    #     x=freqAll[14],
+    #     y=freqAll[14],
+    #     name=airports[14],
+    # )
+
+    fig = tools.make_subplots(rows=5, cols=3)
+    fig.append_trace(trace0, 1, 1)
+    fig.append_trace(trace1, 1, 2)
+    fig.append_trace(trace2, 1, 3)
+    fig.append_trace(trace3, 2, 1)
+    fig.append_trace(trace4, 2, 2)
+    fig.append_trace(trace5, 2, 3)
+    fig.append_trace(trace6, 3, 1)
+    fig.append_trace(trace7, 3, 2)
+    fig.append_trace(trace8, 3, 3)
+    fig.append_trace(trace9, 4, 1)
+    fig.append_trace(trace10, 4, 2)
+    fig.append_trace(trace11, 4, 3)
+    fig.append_trace(trace12, 5, 1)
+    # fig.append_trace(trace13, 5, 2)
+    # fig.append_trace(trace14, 5, 3)
 
     py.plot(fig, filename='wordFrequency')
