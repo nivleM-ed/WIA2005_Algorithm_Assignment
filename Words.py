@@ -124,11 +124,15 @@ def Analysis():
     for i in airport_array:
         printProgressBar(bil + 1, len(items), prefix='Progress:',
                          suffix='Complete', length=50)
-        airport_url = airport_array[i]["link"]
-        opener = AppURLopener()
-        response = opener.open(airport_url)
-        html = response.read()
-
+        try:
+            airport_url = airport_array[i]["link"]
+            opener = AppURLopener()
+            response = opener.open(airport_url)
+            html = response.read()
+        except:
+            print("HTML error")
+            exit()
+            
         str = text_from_html(html)
         str_split = str.split(" ")
         str_split = removeNone(str_split)
