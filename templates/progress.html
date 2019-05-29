@@ -25,18 +25,21 @@
 
             if (event.data >= 100) {
                 source.close()
-                $.ajax({
-                    url: '/airport',
-                    data: $('form').serialize(),
-                    type: 'POST',
-                    success: function (response) {
-                        console.log(response);
-                        window.location.href = "{{ url_for('airport')}}";
-                    },
-                    error: function (error) {
-                        console.log(error);
-                    }
-                });
+                setTimeout(function () {
+                    $.ajax({
+                        url: '/airport',
+                        data: $('form').serialize(),
+                        type: 'POST',
+                        success: function (response) {
+                            console.log(response);
+                            window.location.href = "{{ url_for('airport')}}";
+                        },
+                        error: function (error) {
+                            console.log(error);
+                        }
+                    });
+                }, 2000);
+                
             }
         }
     </script>

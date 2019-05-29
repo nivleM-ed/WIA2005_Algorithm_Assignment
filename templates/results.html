@@ -25,7 +25,7 @@
             position: absolute;
             display: none;
             opacity: 1;
-            background: white;
+            background: rgb(247, 242, 181);
         }
     </style>
     <h1 class="mx-auto p-3 font-weight-bold" style="width: 300px;">BEST ROUTES</h1>
@@ -56,7 +56,7 @@
             <div class="col border overflow" style="overflow:auto; max-height:400px; max-width:850px;">
                 <div>
                     <p>Airport chosen is {{airports[user_choice|int]}}</p>
-                    <p>Best Route:</p>
+                    <p><strong>Best Route:</strong></p>
                     <p>Showing 10 of the best results:</p>
                     <ol>
                         {% for x in range(10) %}
@@ -73,7 +73,7 @@
             <div class="col border overflow" id="distance_route">
                 <div>
                     <p>Airport chosen is {{airports[user_choice|int]}}</p>
-                    <p>Best Distance:</p>
+                    <p><strong>Best Distance:</strong></p>
                     <p>Showing 10 of the best results:</p>
                     <ol>
                         {% for x in range(shortest_paths| length) %}
@@ -141,8 +141,10 @@
         $('#distance').click(function () {
             if ($('#distance_route').css("display") == "block") {
                 $('#distance_route').css("display", "none");
+                $('#distance').text("View best distance");
             } else {
                 $('#distance_route').css("display", "block");
+                $('#distance').text("View best route");
             }
         });
     </script>
