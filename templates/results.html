@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Best Routes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+    </script>
+    <style>
+        #distance_route {
+            overflow: auto;
+            max-height: 400px;
+            max-width: 850px;
+            position: absolute;
+            display: none;
+            opacity: 1;
+            background: white;
+        }
+    </style>
+    <h1 class="mx-auto p-3 font-weight-bold" style="width: 300px;">BEST ROUTES</h1>
+</head>
+
+<body>
+    <div class="container border border-warning rounded p-3" style="padding: 10px">
+        <div>
+            <p>Choose your destination. Origin: Kuala Lumpur International Airport</p>
+        </div>
+        <form action="{{ url_for('results') }}" method="POST">
+            <select name="airports">
+                {%for x in range(airports| length)%}
+                {%if x != 0%}
+                {%if x == user_choice|int%}
+                <option value="{{x}}" selected>{{airports[x]}}</option>
+                {%else%}
+                <option value="{{x}}">{{airports[x]}}</option>
+                {%endif%}
+                {%endif%}
+                {%endfor%}
+            </select>
+            <input type="submit" name="submit" value="Search route" onclick="startBar()">
+        </form>
+    </div>
+    <div class="container" style="padding: 10px; margin: 10px;">
+        <div class="row">
+            <div class="col border overflow" style="overflow:auto; max-height:400px; ">
+                <div>
+                    <p>Airport chosen is {{airports[user_choice|int]}}</p>
+                    <p>Best Route:</p>
+                    <p>Showing 10 of the best results:</p>
+                    <ol>
+                        {% for x in range(10) %}
+                        <li>
+                            <p>{{best_route[x]["path"]}}</p>
+                            <p>Distance: {{best_route[x]["distance"]| int}} &nbspPositive percentage:
+                                {{best_route[x]["positive"]}} &nbspNegative percentage: {{best_route[x]["negative"]}}
+                            </p>
+                        </li>
+                        {% endfor %}
+                    </ol>
+                </div>
+            </div>
+            <div class="col border overflow" id="distance_route">
+                <div>
+                    <p>Airport chosen is {{airports[user_choice|int]}}</p>
+                    <p>Best Route:</p>
+                    <p>Showing 10 of the best results:</p>
+                    <ol>
+                        {% for x in range(shortest_paths| length) %}
+                        <li>
+                            <p>{{shortest_paths[x]}}</p>
+                            <p>Distance: {{distance[x]| int}}</p>
+                        </li>
+                        {% endfor %}
+                    </ol>
+                </div>
+            </div>
+            <div class="col col-lg-3 p-3">
+                <div class="p-3">
+                    <button class="btn btn-danger btn-lg btn-block" id="distance">View best distance</button>
+                </div>
+                <div class="p-3">
+                    <form action="{{ url_for('map') }}" method="POST">
+                        <input type="submit" id="map" class="btn btn-warning btn-lg btn-block" value="View Map"
+                            data-toggle="popover" data-trigger="focus" data-content="Plotting graphs on Google Maps...">
+                    </form>
+                </div>
+                <div class="p-3">
+                    <form action="{{ url_for('stopword') }}" method="POST">
+                        <input type="submit" id="stopword" class="btn btn-warning btn-lg btn-block" value="Stopword"
+                            data-toggle="popover" data-trigger="focus" data-content="Plotting graphs on Plot.ly...">
+                    </form>
+                </div>
+                <div class="p-3">
+                    <form action="{{ url_for('posneg') }}" method="POST">
+                        <input type="submit" id="posneg" class="btn btn-warning btn-lg btn-block"
+                            value="Positive/Negative Words" data-toggle="popover" data-trigger="focus"
+                            data-content="Plotting graphs on Plot.ly...">
+                    </form>
+                </div>
+                <div class="p-3">
+                    <form action="{{ url_for('wordall') }}" method="POST">
+                        <input type="submit" id="wordall" class="btn btn-warning btn-lg btn-block" value="All Words"
+                            data-toggle="popover" data-trigger="focus" data-content="Plotting graphs on Plot.ly...">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $('#wordall').popover().click(function () {
+            setTimeout(function () {
+                $('#wordall').popover('hide');
+            }, 2000);
+        });
+        $('#posneg').popover().click(function () {
+            setTimeout(function () {
+                $('#posneg').popover('hide');
+            }, 2000);
+        });
+        $('#stopword').popover().click(function () {
+            setTimeout(function () {
+                $('#stopword').popover('hide');
+            }, 2000);
+        });
+        $('#map').popover().click(function () {
+            setTimeout(function () {
+                $('#map').popover('hide');
+            }, 2000);
+        });
+        $('#distance').click(function () {
+            if ($('#distance_route').css("display") == "block") {
+                $('#distance_route').css("display", "none");
+            } else {
+                $('#distance_route').css("display", "block");
+            }
+        });
+    </script>
+</body>
+
+</html>

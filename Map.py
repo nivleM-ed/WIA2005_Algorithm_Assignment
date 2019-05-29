@@ -17,17 +17,18 @@ newspapers = ["https://www.thestar.com.my/",
 "https://www.thelocal.se/tag/politics",
 "https://www.newsday.co.zw/",
 "https://riotimesonline.com/brazil-news/category/rio-politics/local-politics-rio-politics/"]
-items = list(range(0, 13))
+map_items = list(range(0, 13))
 latitude_all = []
 longitude_all = []
 airport_dict = {}
+airport_array={}
 
-def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█'):
+def printProgressBarMap (iteration, total, prefix = '', decimals = 1, length = 100, fill = '█'):
 
     percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
     filledLength = int(length * iteration // total)
     bar = fill * filledLength + '-' * (length - filledLength)
-    print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end = '\r')
+    print('\r%s |%s| %s%%' % (prefix, bar, percent), end = '\r')
     # Print New Line on Complete
     if iteration == total: 
         print()
@@ -35,17 +36,18 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
 #create airport_dict (airport_dict.txt)(Details of airport: Name, Address, Latitude, Longitude)
 #create airport_array (airport_distance.txt)(Details of distance difference between airports)
 def getAirports():
+    print("Retrieving airports from database...")
     airport_dict2 = {}
     check = 0
-    printProgressBar(0, len(items), prefix = 'Progress:', suffix = 'Complete', length = 50)
+    printProgressBarMap(0, len(map_items), prefix = 'Progress:', length = 50)
     
     for airport in airports:
         try:
             geolocator = Nominatim(user_agent="BestFlight")
             locate_place = geolocator.geocode(airport)
             # print(check,". ",airport, ":",(locate_place.latitude, locate_place.longitude))
-            printProgressBar(check + 1, len(items), prefix = 'Progress:', suffix = 'Complete', length = 50)
-
+            printProgressBarMap(check + 1, len(map_items), prefix = 'Map:', length = 50)
+            # print("Map:",check)
             latitude_all.append(locate_place.latitude)
             longitude_all.append(locate_place.longitude)
 
@@ -56,10 +58,11 @@ def getAirports():
             airport_dict2["link"]= newspapers[check]
 
             airport_dict[check] = copy.deepcopy(airport_dict2)
-
+            # print("Done part: ", airport)
             check+=1
-        except:
-            print("Can't find place")
+        except Exception as e:
+            print(e)
+            getAirports()
             exit()
 
     airport_array = createList(airport_dict)
@@ -92,6 +95,12 @@ def createList(airports_dict):
 
     with open('assets/airport_distance.txt', 'w', encoding='utf-8') as outfile:  
         json.dump(airport_array, outfile, ensure_ascii=False)
+    return airport_array
+
+
+def getAirportArr():
+    with open('assets/airport_distance.txt','r',encoding="utf8") as f:
+        airport_array = json.loads(f.read())
     return airport_array
 
 #Dijikstra Algo 
@@ -159,9 +168,6 @@ def dijkstra(graph, start, goal):
             shortest_paths[x] = copy.deepcopy(path)
             distance[x] = str(shortest_distance[goal])
             
-            # print("Distance is " + str(shortest_distance[goal]))
-            # print("And the path is " + str(path))
-            
             del graph[start][path[1]]
             unseenNodes = copy.deepcopy(graph)
             addCoordinates(path, latitude, longitude, count)
@@ -189,7 +195,7 @@ def plotMap(latitude, longitude):
         gmap.plot(latitude[x], longitude[x],  
             color[x], edge_width = 2.5) 
 
-    gmap.draw( "assets/map.html" ) 
+    gmap.draw( "templates/map.html" ) 
 
-    url = os.getcwd() + "\\assets\\map.html"
-    webbrowser.open(url, new=2)
+    # url = os.getcwd() + "\\templates\\map.html"
+    # webbrowser.open(url, new=2)

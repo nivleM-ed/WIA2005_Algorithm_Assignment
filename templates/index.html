@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+    </script>
+    <title>Best Routes</title>
+    <h1 class="mx-auto p-3 font-weight-bold" style="width: 300px;">BEST ROUTES</h1>
+</head>
+
+<body>
+    <div class="container border border-warning rounded p-3" style="padding: 10px">
+        <div>
+            <p>Choose your destination. Origin: Kuala Lumpur International Airport</p>
+        </div>
+        <form action="{{ url_for('results') }}" method="POST">
+            <select name="airports">
+                {%for x in range(airports| length)%}
+                {%if x != 0%}
+                <option value="{{x}}">{{airports[x]}}</option>
+                {%endif%}
+                {%endfor%}
+            </select>
+            <input type="submit" name="submit" value="Search route" id="error" data-toggle="popover"
+                data-trigger="focus" data-content="Please select a destination first...">
+        </form>
+    </div>
+    <div class="container" style="padding: 10px; margin: 10px;">
+        <div class="row">
+            <div class="col border overflow">
+                <p>Airport chosen is </p>
+                <p>Best Route:</p>
+                <ol>
+
+                </ol>
+            </div>
+            <div class="col col-lg-3 p-3">
+                <div class="p-3">
+                    <button class="btn btn-danger btn-lg btn-block button">View best distance</button>
+                </div>
+                <div class="p-3">
+                    <form>
+                        <input type="submit" id="map" class="btn btn-warning btn-lg btn-block button" value="View Map">
+                    </form>
+                </div>
+                <div class="p-3">
+                    <form>
+                        <input type="submit" id="stopword" class="btn btn-warning btn-lg btn-block button"
+                            value="Stopword">
+                    </form>
+                </div>
+                <div class="p-3">
+                    <form>
+                        <input type="submit" id="posneg" class="btn btn-warning btn-lg btn-block button"
+                            value="Positive/Negative Words">
+                    </form>
+                </div>
+                <div class="p-3">
+                    <form>
+                        <input type="submit" id="wordall" class="btn btn-warning btn-lg btn-block button"
+                            value="All Words">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $('.button').click(function () {
+            $('#error').popover('show');
+            setTimeout(function () {
+                $('#error').popover('hide');
+            }, 3000);
+        });
+    </script>
+</body>
+
+</html>
