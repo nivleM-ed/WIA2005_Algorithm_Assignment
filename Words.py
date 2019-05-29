@@ -1,12 +1,22 @@
-import urllib.request,nltk, copy, json, ssl, plotly, os, sys
-import plotly.plotly as py
+import copy
+import json
+import os
+import ssl
+import sys
+import urllib.request
+from threading import Thread
+
+import nltk
+import plotly
 import plotly.graph_objs as go
-from plotly import tools
+import plotly.plotly as py
 from bs4 import BeautifulSoup
 from bs4.element import Comment
 from nltk.corpus import stopwords
-from threading import Thread
-from Map import printProgressBar, items, airports, airport_dict
+from plotly import tools
+
+from Map import airport_dict, airports, newspapers
+
 
 class AppURLopener(urllib.request.FancyURLopener):
     version = "Mozilla/5.0"
@@ -27,6 +37,8 @@ wordAll = []
 freqAll = []
 negative_array, positive_array, stopWord_list = readNegPos()
 stopWordList = {}
+probability = {}
+items = list(range(0, 13))
 
 try:
     _create_unverified_https_context = ssl._create_unverified_context
@@ -37,6 +49,15 @@ else:
     # Handle target environment that doesn't support HTTPS verification
     ssl._create_default_https_context = _create_unverified_https_context
 
+def printProgressBarWord (iteration, total, prefix = '', decimals = 1, length = 100, fill = '█'):
+    
+    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    filledLength = int(length * iteration // total)
+    bar = fill * filledLength + '-' * (length - filledLength)
+    print('\r%s |%s| %s%%' % (prefix, bar, percent), end = '\r')
+    # Print New Line on Complete
+    if iteration == total: 
+        print()
 
 def tag_visible(element):
     if element.parent.name in ['style', 'script', 'head', 'title', 'meta', '[document]']:
@@ -118,20 +139,21 @@ def Analysis():
     probability = {}
     bil = 0
     print("Analysing political status...\r")
-    printProgressBar(0, len(items), prefix='Progress:',
-                     suffix='Complete', length=50)
+    # printProgressBarWord(0, len(items), prefix='Progress:',
+    #                  suffix='Complete', length=50)
 
-    for i in airport_array:
-        printProgressBar(bil + 1, len(items), prefix='Progress:',
-                         suffix='Complete', length=50)
+    for i in airports:
+        printProgressBarWord(bil + 1, len(items), prefix='Analysis:', length=50)
+        # print("Words:",bil)
         try:
-            airport_url = airport_array[i]["link"]
+            # airport_url = airport_array[i]["link"]
+            airport_url = newspapers[bil]
             opener = AppURLopener()
             response = opener.open(airport_url)
             html = response.read()
-        except:
-            print("HTML error")
-            exit()
+        except Exception as e:
+            print(e)
+            Analysis()
             
         str = text_from_html(html)
         str_split = str.split(" ")
@@ -144,7 +166,7 @@ def Analysis():
 
         positive, negative, neutral = calculatePercentage(str_split)
 
-        result["name"] = airport_array[i]["name"]
+        result["name"] = airports[bil]
         result["wordFreq"] = wordFreq_set(str_split, wordFreq(str_split))
         result["positive"] = positive
         result["negative"] = negative
@@ -155,13 +177,72 @@ def Analysis():
         bil += 1
 
     try:
+        with open('assets/positive_freq.txt', 'w', encoding='utf-8')as outfile:
+            json.dump(positive_freq, outfile, ensure_ascii=False)
+    except Exception as e:
+        print(e)
+
+    try:
+        with open('assets/negative_freq.txt', 'w', encoding='utf-8')as outfile:
+            json.dump(negative_freq, outfile, ensure_ascii=False)
+    except Exception as e:
+        print(e)
+
+    try:
         with open('assets/political_probability.txt', 'w', encoding='utf-8')as outfile:
             json.dump(probability, outfile, ensure_ascii=False)
     except Exception as e:
         print(e)
 
+    try:
+        with open('assets/stopwords_list.txt', 'w', encoding='utf-8')as outfile:
+            json.dump(stopWordList, outfile, ensure_ascii=False)
+    except Exception as e:
+        print(e)
+
+    try:
+        with open('assets/wordAll.txt', 'w', encoding='utf-8')as outfile:
+            json.dump(wordAll, outfile, ensure_ascii=False)
+    except Exception as e:
+        print(e)
+
+    try:
+        with open('assets/freqAll.txt', 'w', encoding='utf-8')as outfile:
+            json.dump(freqAll, outfile, ensure_ascii=False)
+    except Exception as e:
+        print(e)
+
     return probability
 
+def getNegFreq():
+    with open('assets/negative_freq.txt','r',encoding="utf8") as f:
+        neg_freq = json.loads(f.read())
+    return neg_freq
+
+def getPosFreq():
+    with open('assets/positive_freq.txt','r',encoding="utf8") as f:
+        pos_freq = json.loads(f.read())
+    return pos_freq
+
+def getStopwordsAll():
+    with open('assets/stopwords_list.txt','r',encoding="utf8") as f:
+        stopWordList = json.loads(f.read())
+    return stopWordList
+
+def getwordAll():
+    with open('assets/wordAll.txt','r',encoding="utf8") as f:
+        wordAll = json.loads(f.read())
+    return wordAll
+
+def getfreqAll():
+    with open('assets/freqAll.txt','r',encoding="utf8") as f:
+        freqAll = json.loads(f.read())
+    return freqAll
+
+def getProb():
+    with open('assets/political_probability.txt','r',encoding="utf8") as f:
+        probability = json.loads(f.read())
+    return probability
 
 def wordFreq(str_split):
     wordfreq = []
@@ -186,7 +267,7 @@ def readNegPos():
     return negative_array, positive_array, stopWord_list
 
 
-def plotNegVPos():
+def plotNegVPos(positive_freq, negative_freq):
     city = ["Kuala Lumpur", "Changi", "Abu Dhabi", "Mumbai", "Moscow", "Tokyo", "BeiJing",
             "Shanghai", "Seoul", "Jakarta", "London", "Paris", "Sweeden", "Zimbabwe", "Rio de Janeiro"]
     y0 = positive_freq
@@ -210,71 +291,71 @@ def plotNegVPos():
     py.plot(data, filename='Positive vs Negative words')
 
 
-def plotStopwords():
+def plotStopwords(stopWordList):
 
     trace0 = go.Histogram(
-        x=stopWordList[0]['wordList'],
-        y=stopWordList[0]['wordFreq'],
+        x=stopWordList[str(0)]['wordList'],
+        y=stopWordList[str(0)]['wordFreq'],
         name=airports[0],
     )
     trace1 = go.Histogram(
-        x=stopWordList[1]['wordList'],
-        y=stopWordList[1]['wordFreq'],
+        x=stopWordList[str(1)]['wordList'],
+        y=stopWordList[str(1)]['wordFreq'],
         name=airports[1],
     )
     trace2 = go.Histogram(
-        x=stopWordList[2]['wordList'],
-        y=stopWordList[2]['wordFreq'],
+        x=stopWordList[str(2)]['wordList'],
+        y=stopWordList[str(2)]['wordFreq'],
         name=airports[2],
     )
     trace3 = go.Histogram(
-        x=stopWordList[3]['wordList'],
-        y=stopWordList[3]['wordFreq'],
+        x=stopWordList[str(3)]['wordList'],
+        y=stopWordList[str(3)]['wordFreq'],
         name=airports[3],
     )
     trace4 = go.Histogram(
-        x=stopWordList[4]['wordList'],
-        y=stopWordList[4]['wordFreq'],
+        x=stopWordList[str(4)]['wordList'],
+        y=stopWordList[str(4)]['wordFreq'],
         name=airports[4],
     )
     trace5 = go.Histogram(
-        x=stopWordList[5]['wordList'],
-        y=stopWordList[5]['wordFreq'],
+        x=stopWordList[str(5)]['wordList'],
+        y=stopWordList[str(5)]['wordFreq'],
         name=airports[5],
     )
     trace6 = go.Histogram(
-        x=stopWordList[6]['wordList'],
-        y=stopWordList[6]['wordFreq'],
+        x=stopWordList[str(6)]['wordList'],
+        y=stopWordList[str(6)]['wordFreq'],
         name=airports[6],
     )
     trace7 = go.Histogram(
-        x=stopWordList[7]['wordList'],
-        y=stopWordList[7]['wordFreq'],
+        x=stopWordList[str(7)]['wordList'],
+        y=stopWordList[str(7)]['wordFreq'],
         name=airports[7],
     )
     trace8 = go.Histogram(
-        x=stopWordList[8]['wordList'],
-        y=stopWordList[8]['wordFreq'],
+        x=stopWordList[str(8)]['wordList'],
+        y=stopWordList[str(8)]['wordFreq'],
         name=airports[8],
     )
     trace9 = go.Histogram(
-        x=stopWordList[9]['wordList'],
-        y=stopWordList[9]['wordFreq'],
+        x=stopWordList[str(9)]['wordList'],
+        y=stopWordList[str(9)]['wordFreq'],
         name=airports[9],
     )
     trace10 = go.Histogram(
-        x=stopWordList[10]['wordList'],
-        y=stopWordList[10]['wordFreq'],
+        x=stopWordList[str(10)]['wordList'],
+        y=stopWordList[str(10)]['wordFreq'],
         name=airports[10],
     )
     trace11 = go.Histogram(
-        x=stopWordList[11]['wordList'],
-        y=stopWordList[11]['wordFreq'],
+        x=stopWordList[str(11)]['wordList'],
+        y=stopWordList[str(11)]['wordFreq'],
         name=airports[11],
     )
     trace12 = go.Histogram(
-        x=stopWordList[12]['wordList'],
-        y=stopWordList[12]['wordFreq'],
+        x=stopWordList[str(12)]['wordList'],
+        y=stopWordList[str(12)]['wordFreq'],
         name=airports[12],
     )
 
@@ -296,7 +377,7 @@ def plotStopwords():
     py.plot(fig, filename='stopwordFrequency')
 
 
-def plotAllWords():
+def plotAllWords(wordAll,freqAll):
     trace0 = go.Histogram(
         x=wordAll[0],
         y=freqAll[0],
